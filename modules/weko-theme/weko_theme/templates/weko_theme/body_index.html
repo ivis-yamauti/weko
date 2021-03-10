@@ -17,8 +17,13 @@
   # Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
   # MA 02111-1307, USA.
   #}
+  
+    {% if current_user.is_authenticated %}
+    <div class="panel-group-tmp" id="body_index">
+    {% else %}
+    <div class="panel-group-tmp" id="body_index" style="display:none;">
+    {% endif %}
 
-  <div class="panel-group-tmp" id="body_index">
     {% if index_link_enabled  %}
     <div class="panel panel-default">
     {% else %}

@@ -18,7 +18,7 @@
   # MA 02111-1307, USA.
   #}
   
-    {% if config.WEKO_INDEX_TREE_ENABLE and current_user.is_authenticated %}
+    {% if config.WEKO_SHOW_INDEX_FOR_AUTHENTICATED_USER and current_user.is_authenticated %}
     <div class="panel-group-tmp" id="body_index">
     {% else %}
     <div class="panel-group-tmp" id="body_index" style="display:none;">

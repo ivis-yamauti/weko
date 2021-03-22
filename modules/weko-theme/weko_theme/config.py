@@ -96,6 +96,6 @@ COVER_TEMPLATE = 'weko_theme/page_cover.html'
 WEKO_THEME_INSTANCE_DATA_DIR = 'data'
 """ユーザデータのィレクトリ."""
 
-#WEKO_INDEX_TREE_ENABLE = True
-WEKO_INDEX_TREE_ENABLE = False
+#WEKO_SHOW_INDEX_FOR_AUTHENTICATED_USER  = True
+WEKO_SHOW_INDEX_FOR_AUTHENTICATED_USER  = False
 """インデックスツリー設定"""

@@ -34,7 +34,11 @@
   <div class="row">
     <div class="col-sm-12 col-md-12 col-lg-12 col-left">
       <pre class="hide">{{record|tojson}}</pre>
+      {% if config.WEKO_SHOW_INDEX_FOR_AUTHENTICATED_USER and current_user.is_authenticated %}
       <div class="panel_bread" id="panel_bread">
+      {% else %}
+      <div class="panel_bread" id="panel_bread" style="display:none;">
+      {% endif %}  
         {%- set record_navs = record.navi -%}
         {%- if record_navs -%}
           {%- for nav in record_navs -%}

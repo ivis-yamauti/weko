@@ -42,6 +42,7 @@ class MainLayout extends React.Component {
 
   get_display_control() {
     let url = '/api/admin/search_control/display_control'
+    let login = document.getElementById("login").value
     $.ajax({
         context: this,
         url: url,
@@ -53,7 +54,7 @@ class MainLayout extends React.Component {
                if (data.display_facet_search) {
                   this.setState({is_enable: data.display_facet_search.status})
                }
-               if (data.display_index_tree && !data.display_index_tree.status) {
+               if (data.display_index_tree && !data.display_index_tree.status && login === "False") {
                   $("#body_index").hide()
                }
             }

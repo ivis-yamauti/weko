@@ -34,11 +34,8 @@
   <div class="row">
     <div class="col-sm-12 col-md-12 col-lg-12 col-left">
       <pre class="hide">{{record|tojson}}</pre>
-      {% if config.WEKO_SHOW_INDEX_FOR_AUTHENTICATED_USER and current_user.is_authenticated %}
       <div class="panel_bread" id="panel_bread">
-      {% else %}
-      <div class="panel_bread" id="panel_bread" style="display:none;">
-      {% endif %}  
+      {% if current_user.is_authenticated and config.WEKO_SHOW_INDEX_FOR_AUTHENTICATED_USER %}
         {%- set record_navs = record.navi -%}
         {%- if record_navs -%}
           {%- for nav in record_navs -%}
@@ -63,6 +60,7 @@
             </div>
           {%- endfor %}
         {%- endif -%}
+        {% endif %} 
         <div class="panel-group" style="padding-top: 10px;">
           <h2 style="display: inline;">
             <div style="margin-left: 0.05em;">{{ record.get('item_title', _('No title')) | escape_str }}</div>

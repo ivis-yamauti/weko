@@ -244,6 +244,8 @@ $(document).ready(function () {
       $('#preview_mapping').text(JSON.stringify(page_global.mapping_prop, null, 4));
       return;
     }
+    //display_sub_listsのデバッグ
+    // debugger;
     display_sub_lists(item_type_key, jpcoar_key);
     display_parent_prop(jpcoar_key);
     if($('div.sub_child_list').length == 1) {
@@ -305,6 +307,8 @@ $(document).ready(function () {
       });
     }
   }
+  //display_sub_listsのデバッグ
+  //debugger;
   function display_sub_lists(item_type_key, jpcoar_key) {
     if(page_global.itemtype_prop == null) {
       item_type_str = $('#hide_itemtype_prop').text();
@@ -625,20 +629,74 @@ $(document).ready(function () {
     disableSubSelectOption();
     disableSubAddButton();
   });
+
+
+  // 固定値マッピング
+  $('#sub_mapping-add2').on('click', function(ev){
+    page_global.showDiag = true;
+    let new_sub_info = $('div.sub_children_list').clone(true);
+    // if(page_global.sub_itemtype_list.length > 0) {
+    //   new_sub_info.find('select[name="sub_itemtype_list"]').empty();
+    //   let find_select_sub_itemtype_list = new_sub_info.find('select[name="sub_itemtype_list"]');
+    //   let options = "";
+    //   page_global.sub_itemtype_list.forEach(function(element){
+    //     let display_name = element[1].length>0?element[1]:$('#sub-item-type-lists-label').text();
+    //     options += '<option value="'+element[0]+'">'+display_name+'</option>';
+    //   });
+    //   find_select_sub_itemtype_list.append(options);
+    // }
+    new_sub_info.find('input[type="text"]').removeClass('hide');
+    new_sub_info.find('select[name="sub_itemtype_list"]').addClass('hide');
+    if(page_global.sub_jpcoar_list.length > 0) {
+        new_sub_info.find('select[name="sub_jpcoar_list"]').empty();
+        let currentSubList = getCurrentSubJPCOARList();
+        let isSelected = false;
+        let find_select_sub_jpcoar_list = new_sub_info.find('select[name="sub_jpcoar_list"]');
+        let options = "";
+        page_global.sub_jpcoar_list.forEach(function(element){
+          let isDisabled = false;
+          let selected = "";
+          currentSubList.forEach(function(selectedValue){
+            if (element == selectedValue) {
+              isDisabled = true;
+              return;
+            }
+          });
+          if (!isSelected && !isDisabled){
+            selected = "selected";
+            isSelected = true;
+          }
+          options += '<option ' + selected + ' value="'+element+'">'+element+'</option>';
+        });
+        find_select_sub_jpcoar_list.append(options);
+      }
+    new_sub_info.removeClass('sub_children_list hide').addClass('sub_child_list');
+    new_sub_info.appendTo('#sub_children_lists');
+    $('div.sub_child_list').find('fieldset').removeAttr('disabled');
+    saveMappingData();
+    disableSubSelectOption();
+    disableSubAddButton();
+  });
+
+
   $('select[name="sub_itemtype_list"], select[name="sub_jpcoar_list"]').on('change', function(ev){
+    //saveMappingDataのデバッグ
+    debugger;
     saveMappingData();
   });
 
+  //saveMappingDataのデバッグ
+  //debugger;
   function saveMappingData(){
     if(page_global.mapping_prop == null) {
       mapping_str = $('#hide_mapping_prop').text();
       page_global.mapping_prop = JSON.parse(mapping_str);
     }
-    let jpcoar_type = $("#jpcoar_lists").val();
-    let itemtype_key = $('input[type="radio"]:checked').val();
+    let jpcoar_type = $("#jpcoar_lists").val(); 
+    let itemtype_key = $('input[type="radio"]:checked').val(); 
     let jpcoar_parent_key = '';
     if(itemtype_key === undefined) return;
-    page_global.showDiag = true;
+    page_global.showDiag = true; 
     ul_key = '#ul_' + itemtype_key;
     li_key = ul_key+' li.list_'+jpcoar_type;
     if($(li_key).length == 1) {
@@ -657,7 +715,7 @@ $(document).ready(function () {
       sub_temp_itemtype.sub_jpcoar = $(element).find('select[name="sub_jpcoar_list"]').val();
       if($(element).find('.sub_child_itemtype_list').length > 1) {
         sub_temp_itemtype.sub_itemtypes = [];
-        $(element).find('.sub_child_itemtype_list').each(function (idx, elm) {
+        $(element).find('.sub_child_itemtype_list').each(function (idx, elm) { 
           sub_itemtype_key = {
             itemtype_key: null,
             itemlink_key: null
@@ -769,6 +827,8 @@ $(document).ready(function () {
     $('#preview_mapping').text(JSON.stringify(page_global.mapping_prop, null, 4));
   }
 
+  // saveボタン
+  // debugger;
   $('#mapping-submit').on('click', function(){
     var data = {
       item_type_id: parseInt($('#item-type-lists').val()),
@@ -868,11 +928,14 @@ $(document).ready(function () {
       let selectSize = $("select[name='sub_jpcoar_list']").size() - 1;
       if (selectSize >= page_global.sub_jpcoar_list.length){
         $("#sub_mapping-add").prop("disabled", true);
+        $("#sub_mapping-add2").prop("disabled", true);
       } else {
         $("#sub_mapping-add").prop("disabled", false);
+        $("#sub_mapping-add2").prop("disabled", false);
       }
     } else {
       $("#sub_mapping-add").prop("disabled", true);
+      $("#sub_mapping-add2").prop("disabled", true);    
     }
   }
 });

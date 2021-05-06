@@ -42,7 +42,7 @@ from .utils import check_duplicate_mapping, fix_json_schema, \
     has_system_admin_access, remove_xsd_prefix, \
     update_required_schema_not_exist_in_form
 
-
+# class ItemTypeMetaDataView
 class ItemTypeMetaDataView(BaseView):
     """ItemTypeMetaDataView."""
 
@@ -58,7 +58,7 @@ class ItemTypeMetaDataView(BaseView):
         is_sys_admin = has_system_admin_access()
 
         return self.render(
-            current_app.config['WEKO_ITEMTYPES_UI_ADMIN_REGISTER_TEMPLATE'],
+            current_app.config['WEKO_ITEMTYPES_UI_ADMIN_REGISTER_TEMPLATE'],#weko_itemtypes_ui/admin/create_itemtype.html
             item_type_list=item_type_list,
             id=item_type_id,
             is_sys_admin=is_sys_admin,
@@ -364,7 +364,8 @@ class ItemTypePropertiesView(BaseView):
 
 class ItemTypeMappingView(BaseView):
     """ItemTypeMappingView."""
-
+    # 長いメソッドとなりますが、下記がリクエストを受け取って、
+    # マッピング画面を生成するコード箇所となります。
     @expose('/', methods=['GET'])
     @expose('/<int:ItemTypeID>', methods=['GET'])
     @item_type_permission.require(http_exception=403)
@@ -485,6 +486,8 @@ class ItemTypeMappingView(BaseView):
 
             item_type_mapping = Mapping.get_record(ItemTypeID)
             return self.render(
+                # テンプレートファイル
+                # weko_itemtypes_ui/admin/create_mapping.html
                 current_app.config['WEKO_ITEMTYPES_UI_ADMIN_MAPPING_TEMPLATE'],
                 lists=lists,
                 hide_mapping_prop=item_type_mapping,
@@ -563,6 +566,8 @@ itemtype_properties_adminview = {
     }
 }
 
+# 該当コードの最後にURLとビュークラスの紐付け設定があります。
+# https://192.168.107.3/admin/itemtypes/mapping/1
 itemtype_mapping_adminview = {
     'view_class': ItemTypeMappingView,
     'kwargs': {

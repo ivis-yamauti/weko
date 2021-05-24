@@ -640,6 +640,8 @@ class WekoDeposit(Deposit):
                     item_title=self.data['title']
                 )
         except BaseException:
+            import traceback
+            current_app.logger.error(traceback.format_exc())
             abort(500, 'MAPPING_ERROR')
 
     @preserve(result=False, fields=PRESERVE_FIELDS)
@@ -859,6 +861,8 @@ class WekoDeposit(Deposit):
                                     contents.append(content)
 
                             except Exception as e:
+                                import traceback
+                                current_app.logger.error(traceback.format_exc())
                                 abort(500, '{}'.format(str(e)))
                             break
             self.jrc.update({'content': contents})
@@ -977,6 +981,8 @@ class WekoDeposit(Deposit):
         except RuntimeError:
             raise
         except BaseException:
+            import traceback
+            current_app.logger.error(traceback.format_exc())
             abort(500, 'MAPPING_ERROR')
 
         # Save Index Path on ES
@@ -1026,7 +1032,7 @@ class WekoDeposit(Deposit):
         # if cls.update_pid_by_index_tree_id(cls, path):
         #    from .tasks import delete_items_by_id
         #    delete_items_by_id.delay(path)
-        obj_ids = next(cls.indexer.get_pid_by_es_scroll(path))
+        obj_ids = next((cls.indexer.get_pid_by_es_scroll(path)), [])
         try:
             for obj_uuid in obj_ids:
                 r = RecordMetadata.query.filter_by(id=obj_uuid).first()
@@ -1320,7 +1326,7 @@ class WekoRecord(Record):
                         nval['is_thumbnail'] = True
                     elif sys_bibliographic.is_bibliographic():
                         nval['attribute_value_mlt'] = \
-                            sys_bibliographic.get_bibliographic_list()
+                            sys_bibliographic.get_bibliographic_list(False)
                     else:
                         nval['attribute_value_mlt'] = \
                             get_attribute_value_all_items(
@@ -1362,18 +1368,15 @@ class WekoRecord(Record):
             if mlt is not None:
                 # Processing get files.
                 mlt = copy.deepcopy(mlt)
-                # Check file permission.
-                file_metadata = self.__remove_file_metadata_do_not_publish(mlt)
-                if not file_metadata:
-                    continue
                 # Get file with current version id.
                 file_metadata_temp = []
                 exclude_attr = [
                     'displaytype', 'accessrole', 'licensetype', 'licensefree']
                 filename = request.args.get("filename", None)
                 file_order = int(request.args.get("file_order", -1))
-                for idx, f in enumerate(file_metadata):
-                    if file_order == idx or f.get('filename') == filename:
+                for idx, f in enumerate(mlt):
+                    if (f.get('filename') == filename and file_order == -1) \
+                            or file_order == idx:
                         # Exclude attributes which is not use.
                         for ea in exclude_attr:
                             if f.get(ea, None):
@@ -1599,6 +1602,24 @@ class WekoRecord(Record):
 
         if relation_data:
             item_link.update(relation_data)
+
+    def get_file_data(self):
+        """Get file data."""
+        item_type_id = self.get('item_type_id')
+        solst, _ = get_options_and_order_list(item_type_id)
+        items = []
+        for lst in solst:
+            key = lst[0]
+            val = self.get(key)
+            if not val:
+                continue
+            # Just get data of 'File'.
+            if val.get('attribute_type') != "file":
+                continue
+            mlt = val.get('attribute_value_mlt')
+            if mlt is not None:
+                items.extend(mlt)
+        return items
 
 
 class _FormatSysCreator:
@@ -2020,7 +2041,7 @@ class _FormatSysBibliographicInformation:
 
         return False
 
-    def get_bibliographic_list(self):
+    def get_bibliographic_list(self, is_get_list):
         """Get bibliographic information list.
 
         :return: bibliographic list
@@ -2028,7 +2049,7 @@ class _FormatSysBibliographicInformation:
         bibliographic_list = []
         for bibliographic in self.bibliographic_meta_data_lst:
             title_data, magazine, length = self._get_bibliographic(
-                bibliographic)
+                bibliographic, is_get_list)
             bibliographic_list.append({
                 'title_attribute_name': title_data,
                 'magazine_attribute_name': magazine,
@@ -2036,19 +2057,31 @@ class _FormatSysBibliographicInformation:
             })
         return bibliographic_list
 
-    def _get_bibliographic(self, bibliographic):
+    def _get_bibliographic(self, bibliographic, is_get_list):
         """Get bibliographic information data.
 
         :param bibliographic:
         :return: title_data, magazine, length
         """
         title_data = []
+        language = 'ja'
         if bibliographic.get('bibliographic_titles'):
-            title_data = self._get_source_title(
-                bibliographic.get('bibliographic_titles'))
-        bibliographic_info_lst, length = self._get_bibliographic_information(
-            bibliographic)
-        return title_data, bibliographic_info_lst, length
+            if is_get_list:
+                current_lang = current_i18n.language
+                if not current_lang:
+                    current_lang = 'en'
+                title_data, language = self._get_source_title_show_list(
+                    bibliographic.get('bibliographic_titles'), current_lang)
+            else:
+                title_data = self._get_source_title(
+                    bibliographic.get('bibliographic_titles'))
+        if is_get_list:
+            bibliographic_info, length = self._get_bibliographic_show_list(
+                bibliographic, language)
+        else:
+            bibliographic_info, length = self._get_bibliographic_information(
+                bibliographic)
+        return title_data, bibliographic_info, length
 
     def _get_property_name(self, key):
         """Get property name.
@@ -2060,6 +2093,19 @@ class _FormatSysBibliographicInformation:
             if key == lst[0].split('.')[-1]:
                 return lst[2]
         return key
+
+    @staticmethod
+    def _get_translation_key(key, lang):
+        """Get translation key.
+
+        :param key: Property key
+        :param lang: : Language
+        :return: Translation key.
+        """
+        bibliographic_translation = current_app.config.get(
+            'WEKO_DEPOSIT_BIBLIOGRAPHIC_TRANSLATIONS')
+        if key in bibliographic_translation:
+            return bibliographic_translation.get(key, {}).get(lang, '')
 
     def _get_bibliographic_information(self, bibliographic):
         """Get magazine information data.
@@ -2089,6 +2135,36 @@ class _FormatSysBibliographicInformation:
             bibliographic_info_list) else 0
         return bibliographic_info_list, length
 
+    def _get_bibliographic_show_list(self, bibliographic, language):
+        """Get magazine information data.
+
+        :param bibliographic:
+        :return:
+        """
+        bibliographic_info_list = []
+        for key in WEKO_DEPOSIT_BIBLIOGRAPHIC_INFO_KEY:
+            if key == 'p.':
+                page = self._get_page_tart_and_page_end(
+                    bibliographic.get('bibliographicPageStart'),
+                    bibliographic.get('bibliographicPageEnd'))
+                if page != '':
+                    bibliographic_info_list.append({key: page})
+            elif key == 'bibliographicIssueDates':
+                dates = self._get_issue_date(
+                    bibliographic.get(key))
+                if dates:
+                    bibliographic_info_list.append(
+                        {self._get_translation_key(key, language): " ".join(
+                            str(x) for x in dates)})
+            elif bibliographic.get(key):
+                bibliographic_info_list.append({
+                    self._get_translation_key(key, language): bibliographic.get(
+                        key)
+                })
+        length = len(bibliographic_info_list) if len(
+            bibliographic_info_list) else 0
+        return bibliographic_info_list, length
+
     @staticmethod
     def _get_source_title(source_titles):
         """Get source title.
@@ -2105,6 +2181,43 @@ class _FormatSysBibliographicInformation:
                 'bibliographic_title') else ''
             title_data.append(title)
         return title_data
+
+    @staticmethod
+    def _get_source_title_show_list(source_titles, current_lang):
+        """Get source title in show list.
+
+        :param current_lang:
+        :param source_titles:
+        :return:
+        """
+        title_data_lang = []
+        title_data_none_lang = []
+        for source_title in source_titles:
+            title = {}
+            key = source_title.get('bibliographic_titleLang')
+            value = source_title.get('bibliographic_title')
+            if not value:
+                continue
+            elif current_lang == key:
+                if current_lang == 'ja':
+                    return value, current_lang
+                else:
+                    return value, 'en'
+            else:
+                if key:
+                    title[key] = value
+                    title_data_lang.append(title)
+                else:
+                    title_data_none_lang.append(value)
+        for title_data in title_data_lang:
+            if title_data.get('en'):
+                return title_data.get('en'), 'en'
+
+        if len(title_data_lang) > 0:
+            return list(title_data_lang[0].values())[0], \
+                'en'
+        return (title_data_none_lang[0], 'ja') if len(
+            title_data_none_lang) > 0 else (None, 'ja')
 
     @staticmethod
     def _get_page_tart_and_page_end(page_start, page_end):

@@ -80,6 +80,9 @@ WEKO_ADMIN_ITEM_EXPORT_SETTINGS_TEMPLATE = \
     'weko_admin/admin/item_export_settings.html'
 """Item Export Settings template."""
 
+WEKO_ADMIN_RESTRICTED_ACCESS_SETTINGS_TEMPLATE = 'weko_admin/admin/restricted_access_settings.html'
+"""Restricted Access Settings template."""
+
 LOGO_ALLOWED_EXTENSIONS = set(['png', 'jpeg', 'jpg'])
 
 WEKO_ADMIN_CROSSREF_API_URL = 'https://doi.crossref.org/'
@@ -241,6 +244,12 @@ WEKO_ADMIN_MANAGEMENT_OPTIONS = {
         {'id': 'custom_sort_desc',
          'contents': 'Custom(desc)',
          'disableFlg': False},
+        {'id': 'relevance_asc',
+         'contents': 'Relevance(asc)',
+         'disableFlg': False},
+        {'id': 'relevance_desc',
+         'contents': 'Relevance(desc)',
+         'disableFlg': False},
     ],
     'dlt_index_sort_selected': 'controlnumber_asc',
     'dlt_keyword_sort_options': [
@@ -282,6 +291,12 @@ WEKO_ADMIN_MANAGEMENT_OPTIONS = {
         {'id': 'custom_sort_desc',
          'contents': 'Custom(desc)',
          'disableFlg': False},
+        {'id': 'relevance_asc',
+         'contents': 'Relevance(asc)',
+         'disableFlg': False},
+        {'id': 'relevance_desc',
+         'contents': 'Relevance(desc)',
+         'disableFlg': False},
     ],
     'dlt_keyword_sort_selected': 'createdate_desc',
     'sort_options': {
@@ -294,7 +309,8 @@ WEKO_ADMIN_MANAGEMENT_OPTIONS = {
             {'id': 'upd_asc', 'contents': 'Update(asc/desc)'},
             {'id': 'createdate_asc', 'contents': 'Create(asc/desc)'},
             {'id': 'pyear_asc', 'contents': 'Date Of Issued(asc/desc)'},
-            {'id': 'custom_sort_asc', 'contents': 'Custom(asc/desc)'}
+            {'id': 'custom_sort_asc', 'contents': 'Custom(asc/desc)'},
+            {'id': 'relevance_asc', 'contents': 'Relevance(asc/desc)'},
         ]
     },
     'display_control': {
@@ -632,9 +648,9 @@ WEKO_ADMIN_MANAGEMENT_OPTIONS = {
 
 WEKO_ADMIN_PERMISSION_ROLE_SYSTEM = "System Administrator"
 
-WEKO_PERMISSION_ROLE_REPO = "Repository Administrator"
+WEKO_ADMIN_PERMISSION_ROLE_REPO = "Repository Administrator"
 
-WEKO_PERMISSION_ROLE_COMMUNITY = "Community Administrator"
+WEKO_ADMIN_PERMISSION_ROLE_COMMUNITY = "Community Administrator"
 
 WEKO_ADMIN_COMMUNITY_ACCESS_LIST = [
     'admin',
@@ -681,6 +697,7 @@ WEKO_ADMIN_REPOSITORY_ACCESS_LIST = [
     'itemtypesmapping',
     'itemtypes/mapping',
     'items/import',
+    'items/bulk-export',
     'feedbackmail',
     'sitelicensesendmail',
     'sessionactivity',
@@ -760,3 +777,24 @@ WEKO_INDEX_TREE_STYLE_OPTIONS = {
     'id': 'weko',
     'widths': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
 }
+
+WEKO_ADMIN_RESTRICTED_ACCESS_SETTINGS = {
+    "content_file_download": {
+        "expiration_date": 30,
+        "expiration_date_unlimited_chk": False,
+        "download_limit": 10,
+        "download_limit_unlimited_chk": False,
+    },
+    "usage_report_workflow_access": {
+        "expiration_date_access": 500,
+        "expiration_date_access_unlimited_chk": False,
+    },
+    "terms_and_conditions": []
+}
+"""Default restricted access settings."""
+
+WEKO_ADMIN_ITEMS_PER_PAGE_USAGE_REPORT_REMINDER = 25
+"""Default number of usage report activities results that display in one page."""
+
+WEKO_ADMIN_FEEDBACK_MAIL_DEFAULT_SUBJECT = "No Site Name"
+"""Default subject of feedback email."""

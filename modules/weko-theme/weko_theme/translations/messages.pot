@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: weko-theme 0.1.0.dev20170000\n"
 "Report-Msgid-Bugs-To: wekosoftware@nii.ac.jp\n"
-"POT-Creation-Date: 2021-03-25 14:40+0900\n"
+"POT-Creation-Date: 2021-05-05 22:53+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Generated-By: Babel 2.8.0\n"
 
 #: weko_theme/templates/weko_theme/macros/tabs_selector.html:27
-#: weko_theme/utils.py:210
+#: weko_theme/utils.py:225
 msgid "Communities"
 msgstr ""
 
@@ -59,7 +59,7 @@ msgid "Execution"
 msgstr ""
 
 #: weko_theme/templates/weko_theme/body_contents.html:54
-#: weko_theme/templates/weko_theme/body_contents.html:77
+#: weko_theme/templates/weko_theme/body_contents.html:79
 msgid "Display order"
 msgstr ""
 
@@ -135,15 +135,23 @@ msgstr ""
 msgid "Custom(Descending)"
 msgstr ""
 
-#: weko_theme/templates/weko_theme/body_contents.html:91
+#: weko_theme/templates/weko_theme/body_contents.html:74
+msgid "Relevance(Ascending)"
+msgstr ""
+
+#: weko_theme/templates/weko_theme/body_contents.html:75
+msgid "Relevance(Descending)"
+msgstr ""
+
+#: weko_theme/templates/weko_theme/body_contents.html:93
 msgid "The number of display"
 msgstr ""
 
-#: weko_theme/templates/weko_theme/body_contents.html:108
+#: weko_theme/templates/weko_theme/body_contents.html:110
 msgid "Search failed."
 msgstr ""
 
-#: weko_theme/templates/weko_theme/body_contents.html:112
+#: weko_theme/templates/weko_theme/body_contents.html:114
 msgid "Loading..."
 msgstr ""
 
@@ -151,7 +159,7 @@ msgstr ""
 msgid "Index Link"
 msgstr ""
 
-#: weko_theme/templates/weko_theme/body_index.html:49
+#: weko_theme/templates/weko_theme/body_index.html:51
 msgid "Index Tree"
 msgstr ""
 
@@ -173,7 +181,7 @@ msgid "Advanced"
 msgstr ""
 
 #: weko_theme/templates/weko_theme/body_search.html:44
-#: weko_theme/templates/weko_theme/macros/modal_page.html:67
+#: weko_theme/templates/weko_theme/macros/modal_page.html:91
 msgid "Close"
 msgstr ""
 
@@ -233,6 +241,14 @@ msgstr ""
 msgid "Top Page"
 msgstr ""
 
+#: weko_theme/templates/weko_theme/error.html:27
+msgid "Internal server error"
+msgstr ""
+
+#: weko_theme/templates/weko_theme/error.html:30
+msgid "Error identifier"
+msgstr ""
+
 #: weko_theme/templates/weko_theme/footer_editor.html:27
 #: weko_theme/templates/weko_theme/footer_wysiwyg.html:27
 #, python-format
@@ -244,16 +260,16 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#: weko_theme/templates/weko_theme/header_login.html:22
+#: weko_theme/templates/weko_theme/header_login.html:28
 msgid "Log in"
 msgstr ""
 
-#: weko_theme/templates/weko_theme/header_login.html:25
+#: weko_theme/templates/weko_theme/header_login.html:31
 msgid "Sign up"
 msgstr ""
 
-#: weko_theme/templates/weko_theme/header_login.html:39
-#: weko_theme/templates/weko_theme/header_login.html:42
+#: weko_theme/templates/weko_theme/header_login.html:45
+#: weko_theme/templates/weko_theme/header_login.html:48
 msgid "Log out"
 msgstr ""
 
@@ -287,12 +303,28 @@ msgid "Language:"
 msgstr ""
 
 #: weko_theme/templates/weko_theme/macros/modal_page.html:31
+#: weko_theme/templates/weko_theme/macros/modal_page.html:54
 msgid "WEKO"
 msgstr ""
 
 #: weko_theme/templates/weko_theme/macros/modal_page.html:39
-#: weko_theme/templates/weko_theme/macros/modal_page.html:93
+#: weko_theme/templates/weko_theme/macros/modal_page.html:117
+#: weko_theme/templates/weko_theme/macros/modal_page.html:160
 msgid "Cancel"
+msgstr ""
+
+#: weko_theme/templates/weko_theme/macros/modal_page.html:62
+msgid "OK"
+msgstr ""
+
+#: weko_theme/templates/weko_theme/macros/modal_page.html:138
+#: weko_theme/templates/weko_theme/macros/modal_page.html:141
+msgid "Email address"
+msgstr ""
+
+#: weko_theme/templates/weko_theme/macros/modal_page.html:145
+#: weko_theme/templates/weko_theme/macros/modal_page.html:148
+msgid "Email address(reconfirmation)"
 msgstr ""
 
 #: weko_theme/templates/weko_theme/macros/tabs_selector.html:23

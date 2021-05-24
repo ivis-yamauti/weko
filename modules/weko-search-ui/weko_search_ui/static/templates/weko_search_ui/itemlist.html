@@ -7,14 +7,14 @@
         </label>
       </div>
       <a target="_self" ng-href="/records/{{ record.id }}{{commInfo}}">
-        <span class="glyphicon glyphicon-file" aria-hidden="true"></span> {{ record.metadata.hasOwnProperty('title')?record.metadata.title[0]:record.metadata['dc:title'][0]|escapeTitle}}</a>
+        <span class="glyphicon glyphicon-file" aria-hidden="true"></span>{{ record.metadata.hasOwnProperty('title')?record.metadata.title[0]:record.metadata['dc:title'][0]|escapeTitle}}</a>
     </div>
   </div>
   <div class="panel-body">
     <table cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td ng-hide="!record.metadata._thumbnail" class="fitwidth" style="vertical-align: top;">
-          <img src="/record/{{ record.id }}/files/{{record.metadata._thumbnail.thumbnail_label}}"
+          <img ng-if="record.metadata._thumbnail" ng-src="/record/{{ record.id }}/files/{{record.metadata._thumbnail.thumbnail_label}}"
             alt="{{record.metadata._thumbnail.thumbnail_label}}" width="{{record.metadata._thumbnail.thumbnail_width}}">
         </td>
         <td style="vertical-align: top;">

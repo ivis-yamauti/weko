@@ -35,6 +35,7 @@ from invenio_communities.views.ui import mycommunities_ctx
 from invenio_i18n.ext import current_i18n
 from invenio_search import RecordsSearch
 from weko_admin.models import AdminSettings, RankingSettings, SearchManagement
+from weko_admin.utils import get_search_setting
 from weko_gridlayout.services import WidgetDesignServices
 from weko_gridlayout.utils import get_widget_design_page_with_main, \
     main_design_has_main_widget
@@ -79,6 +80,20 @@ def get_weko_contents(getargs):
 
     detail_condition = get_search_detail_keyword('')
     check_site_license_permission()
+
+    # Get Facet search setting.
+    display_facet_search = get_search_setting().get("display_control", {}).get(
+        'display_facet_search', {}).get('status', False)
+    ctx.update({
+        "display_facet_search": display_facet_search
+    })
+
+    # Get display_index_tree setting.
+    display_index_tree = get_search_setting().get("display_control", {}).get(
+        'display_index_tree', {}).get('status', False)
+    ctx.update({
+        "display_index_tree": display_index_tree
+    })
 
     return dict(
         community_id=community_id,

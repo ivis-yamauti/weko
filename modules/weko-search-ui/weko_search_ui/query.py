@@ -581,7 +581,6 @@ def default_search_factory(self, search, query_parser=None, search_type=None):
             sort_key, sort = SearchSetting.get_default_sort(
                 current_app.config['WEKO_SEARCH_TYPE_KEYWORD'])
             key_fileds = SearchSetting.get_sort_key(sort_key)
-
             if key_fileds:
                 sort_obj = dict()
                 nested_sorting = SearchSetting.get_nested_sorting(sort_key)
@@ -966,7 +965,8 @@ def item_search_factory(self,
                         search,
                         start_date,
                         end_date,
-                        list_index_id=None):
+                        list_index_id=None,
+                        ignore_publish_status=False):
     """Factory for opensearch.
 
     :param self:
@@ -974,16 +974,18 @@ def item_search_factory(self,
     :param start_date: Start date for search
     :param end_date: End date for search
     :param list_index_id: index tree list or None
+    :param ignore_publish_status: both public and private
     :return:
     """
     def _get_query(start_term, end_term, indexes):
         query_string = "_type:{} AND " \
                        "relation_version_is_last:true AND " \
-                       "publish_status:0 AND " \
                        "publish_date:[{} TO {}]".format(current_app.config[
                            "INDEXER_DEFAULT_DOC_TYPE"],
                            start_term,
                            end_term)
+        if not ignore_publish_status:
+            query_string += " AND publish_status:0 "
         query_filter = []
 
         if indexes:
@@ -991,7 +993,7 @@ def item_search_factory(self,
             for index in indexes:
                 q_wildcard = {
                     "wildcard": {
-                        "path": "*{}*".format(index)
+                        "path": index
                     }
                 }
                 query_filter.append(q_wildcard)

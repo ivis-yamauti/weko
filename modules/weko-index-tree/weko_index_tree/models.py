@@ -22,10 +22,11 @@
 
 from datetime import datetime
 
-from flask import current_app, flash
+from flask import current_app
 from invenio_db import db
+from invenio_i18n.ext import current_i18n
 from sqlalchemy.dialects import mysql, postgresql
-from sqlalchemy_utils.types import JSONType, UUIDType
+from sqlalchemy_utils.types import JSONType
 from weko_records.models import Timestamp
 
 # from sqlalchemy_utils.types import UUIDType
@@ -177,9 +178,9 @@ class Index(db.Model, Timestamp):
     )
     """The sort of item by custom setting"""
 
-    # index_items = db.relationship('IndexItems', back_populates='index', cascade='delete')
-
-    biblio_flag = db.Column(db.Boolean(name='biblio_flag'), nullable=True, default=False)
+    biblio_flag = db.Column(db.Boolean(name='biblio_flag'),
+                            nullable=True,
+                            default=False)
     """Flag of Items' statistics of the index."""
 
     online_issn = db.Column(db.Text, nullable=True, default='')
@@ -201,8 +202,16 @@ class Index(db.Model, Timestamp):
 
     def __str__(self):
         """Representation."""
-        return 'Index <id={0.id}, index_name={0.index_name_english}>'.format(
-            self)
+        if current_i18n.language == 'ja' and self.index_name:
+            return 'Index <id={}, name={}>'.format(
+                self.id,
+                self.index_name.replace(
+                    "\n", r"<br\>").replace("&EMPTY&", ""))
+        else:
+            return 'Index <id={}, name={}>'.format(
+                self.id,
+                self.index_name_english.replace(
+                    "\n", r"<br\>").replace("&EMPTY&", ""))
 
     @classmethod
     def have_children(cls, id):
@@ -222,24 +231,13 @@ class Index(db.Model, Timestamp):
                     'index_name': index.index_name
                 }
                 result.append(data)
-        return [] if (result is None or len(result) == 0) else result
+        return result if result else []
 
-# class IndexItems(db.Model):
-#     """"""
-#     __tablename__ = 'index_item'
-#
-#     id = db.Column(db.BigInteger,
-#                    db.ForeignKey(Index.id),
-#                    primary_key=True, nullable=False)
-#     """Identifier of the index."""
-#
-#     rid = db.Column(UUIDType,
-#                     db.ForeignKey(RecordMetadata.id,
-#                                   ondelete='RESTRICT'),
-#                     primary_key=True, nullable=False)
-#     """Record identifier."""
-#
-#     index = db.relationship(Index, back_populates='index_item')
+    @classmethod
+    def get_index_by_id(cls, index):
+        """Get all Indexes."""
+        query_result = cls.query.filter_by(id=index).one_or_none()
+        return query_result
 
 
 class IndexStyle(db.Model, Timestamp):

@@ -8,8 +8,8 @@ RUN echo "deb http://nginx.org/packages/ubuntu focal nginx" | tee /etc/apt/sourc
 RUN echo "deb-src http://nginx.org/packages/ubuntu focal nginx" | tee -a /etc/apt/sources.list.d/nginx.list
 RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
 RUN apt-get update -y
-RUN apt-get source -y nginx
-RUN apt-get build-dep -y nginx
+RUN apt-get source -y nginx=1.18.0
+RUN apt-get build-dep -y nginx=1.18.0
 
 # https://github.com/samizdatco/nginx-http-auth-digest
 RUN wget "https://github.com/samizdatco/nginx-http-auth-digest/archive/master.zip" -O nginx-http-auth-digest.zip
@@ -64,8 +64,8 @@ ADD redirect_list.map /etc/nginx/redirect_list.map
 RUN chmod 400 /etc/nginx/server.key
 
 RUN mkdir  /usr/share/nginx/html/secure
-ADD ./phpinfo.php /usr/share/nginx/html/secure/phpinfo.php
-ADD ./index.php /usr/share/nginx/html/secure/index.php
+#ADD ./phpinfo.php /usr/share/nginx/html/secure/phpinfo.php
+#ADD ./index.php /usr/share/nginx/html/secure/index.php
 ADD ./login.php /usr/share/nginx/html/secure/login.php
 
 ADD ./shib_clear_headers /etc/nginx/shib_clear_headers
